@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  nde-monitor:
+    build: .
+    container_name: nde-monitoring-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - TZ=Asia/Jakarta
+    volumes:
+      - ./state.json:/app/state.json
+      - ./monitor.log:/app/monitor.log
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "python.*main.py"]
+      interval: 5m
+      timeout: 30s
+      retries: 3
+      start_period: 30s
